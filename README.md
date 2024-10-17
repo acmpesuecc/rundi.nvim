@@ -1,8 +1,8 @@
 # rundi.nvim
 
-[![GitHub stars](https://img.shields.io/github/stars/s3dman/rundi.nvim)](https://github.com/s3dman/rundi.nvim/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/s3dman/rundi.nvim)](https://github.com/s3dman/rundi.nvim/issues)
-[![GitHub license](https://img.shields.io/github/license/s3dman/rundi.nvim)](https://github.com/s3dman/rundi.nvim/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/acmpesuecc/rundi.nvim)](https://github.com/acmpesuecc/rundi.nvim/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/acmpesuecc/rundi.nvim)](https://github.com/acmpesuecc/rundi.nvim/issues)
+[![GitHub license](https://img.shields.io/github/license/acmpesuecc/rundi.nvim)](https://github.com/acmpesuecc/rundi.nvim/blob/main/LICENSE)
 
 rundi.nvim is a Neovim plugin that makes it easy to generate compile command mappings right within Neovim. It provides a simple interface to generate mappings for various filetypes and workflows.
 
@@ -12,12 +12,12 @@ You can install rundi.nvim using your preferred plugin manager for Neovim. Here 
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 ```lua
-Plug 's3dman/rundi.nvim'
+Plug 'acmpesuecc/rundi.nvim'
 ```
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 ```lua
-use 's3dman/rundi.nvim'
+use 'acmpesuecc/rundi.nvim'
 ```
 
 ## Configuration
@@ -28,7 +28,7 @@ Available Configuration Options
 	- `compiler` Compiler to be used.
 	- `compiler_args` Compiler args to be passed.
 	- `output_format` Filename modifier for output file. (See `:h %:p` for list of modifiers)
-- `silent` Visibilty of rundi command.
+- `silent` Visibility of rundi command.
 - `keymap` Keymap for rundi.
 
 Example configuration:
