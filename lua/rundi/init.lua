@@ -55,47 +55,41 @@ end
 
 local function setup_autocompile(filetype, options)
 	local ac = config.autocompile[filetype]
-	if ac then
-		local silent_option = config.silent and "<silent>" or ""
-		local compiler_args = options.compiler_args and (" " .. options.compiler_args) or ""
-		local output_flag = options.output_format and (" -o " .. options.output_format) or ""
-		local execute_flag = options.output_format and (" && ./" .. options.output_format) or ""
-		local input_file = ' "%"'
+	if not ac then
+		return
+	end
 
-		if config.split_direction == "fullscreen" then
-			vim.cmd([[ term ]] .. options.compiler .. compiler_args .. input_file .. output_flag .. execute_flag)
-			return
+	local silent_option = config.silent and "<silent>" or ""
+	local compiler_args = options.compiler_args and (" " .. options.compiler_args) or ""
+	local output_flag = options.output_format and (" -o " .. options.output_format) or ""
+	local execute_flag = options.output_format and (" && ./" .. options.output_format) or ""
+	local input_file = ' "%"'
+
+	local command = options.compiler .. compiler_args .. input_file .. output_flag .. execute_flag
+
+	if config.split_direction == "fullscreen" then
+		vim.cmd("term " .. command)
+		return
+	end
+
+	local split_cmd = "split"
+	if config.terminal_split then
+		if config.split_direction == "bottom" then
+			split_cmd = "splitbelow"
+		elseif config.split_direction == "left" then
+			split_cmd = "vsplit"
+		elseif config.split_direction == "right" then
+			split_cmd = "vsplitright"
 		end
 
-		local split_cmd = "split"
-		if config.terminal_split then
-			if config.split_direction == "bottom" then
-				split_cmd = "splitbelow"
-			elseif config.split_direction == "left" then
-				split_cmd = "vsplit"
-			elseif config.split_direction == "right" then
-				split_cmd = "vsplitright"
-			end
+		local current_buffer = vim.fn.bufnr("%")
+		vim.cmd(split_cmd .. " | term " .. command)
 
-			local current_buffer = vim.fn.bufnr("%")
-
-			vim.cmd(
-				[[ ]]
-					.. split_cmd
-					.. [[ | term ]]
-					.. options.compiler
-					.. compiler_args
-					.. input_file
-					.. output_flag
-					.. execute_flag
-			)
-
-			if config.persist_viewport and previous_buffer ~= 0 then
-				vim.cmd("execute 'buffer ' .. " .. previous_buffer)
-			end
-
-			previous_buffer = current_buffer
+		if config.persist_viewport and previous_buffer ~= 0 then
+			vim.cmd("execute 'buffer ' .. " .. previous_buffer)
 		end
+
+		previous_buffer = current_buffer
 	end
 end
 
