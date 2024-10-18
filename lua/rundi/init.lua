@@ -108,6 +108,7 @@ local function Rundi()
 		print("Autocompile executed for filetype: " .. filetype)
 	else
 		print("No autocompile configuration found for filetype: " .. filetype)
+		vim.cmd("insert")
 	end
 end
 
