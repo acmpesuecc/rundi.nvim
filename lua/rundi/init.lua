@@ -28,6 +28,31 @@ local config = {
 
 local previous_buffer = 0
 
+-- Utility function to write table to a JSON file
+local function Write_to_json_file(filepath, table_data)
+	local json = vim.fn.json_encode(table_data)
+	local file = io.open(filepath, "w")
+	if file then
+		file:write(json)
+		file:close()
+	else
+		print("Failed to write to " .. filepath)
+	end
+end
+
+-- Utility function to read JSON file and decode into Lua table
+local function Read_json_file(filepath)
+	local file = io.open(filepath, "r")
+	if not file then
+		print("Could not read JSON file: " .. filepath)
+		return nil
+	end
+
+	local content = file:read("*a")
+	file:close()
+	return vim.fn.json_decode(content)
+end
+
 local function setup_autocompile(filetype, options)
 	local ac = config.autocompile[filetype]
 	if ac then
@@ -74,15 +99,11 @@ local function setup_autocompile(filetype, options)
 	end
 end
 
--- Function that runs the autocompile and generates the executable
+-- Function to handle autocompiling when :rundi is called
 local function Rundi()
-	-- Get the current file type (based on file extension)
 	local filetype = vim.bo.filetype
-
-	-- Check if the file type has autocompile configuration
 	local options = config.autocompile[filetype]
 	if options then
-		-- Run the autocompile for the current filetype
 		setup_autocompile(filetype, options)
 		print("Autocompile executed for filetype: " .. filetype)
 	else
@@ -90,8 +111,52 @@ local function Rundi()
 	end
 end
 
--- Register the :rundi command to trigger the compilation and execution
-vim.api.nvim_create_user_command("Rundi", Rundi, {})
+-- Function that overrides config based on user input and creates/reads JSON
+local function Rundi_set()
+	-- JSON file path to store custom config
+	local json_filepath = vim.fn.stdpath("config") .. "/rundi_custom_config.json"
+
+	-- Prompt user for a filetype, compiler, and other options
+	local filetype = vim.fn.input("Enter filetype (e.g., cpp, python, go, etc.): ")
+	local compiler = vim.fn.input("Enter compiler for " .. filetype .. " (e.g., g++, python3, go build): ")
+	local compiler_args = vim.fn.input("Enter compiler args (optional): ", "")
+	local output_format = vim.fn.input("Enter output format (default: %:t:r): ", "%:t:r")
+
+	-- Prepare the new autocompile settings for the given filetype
+	local new_config = {
+		autocompile = config.autocompile, -- Start with existing autocompile settings
+	}
+
+	-- Update the specific filetype with user inputs
+	new_config.autocompile[filetype] = {
+		compiler = compiler,
+		compiler_args = compiler_args,
+		output_format = output_format,
+	}
+
+	-- Write new config to JSON
+	Write_to_json_file(json_filepath, new_config)
+	print("Custom config saved to: " .. json_filepath)
+
+	-- Load custom config from JSON
+	local loaded_config = Read_json_file(json_filepath)
+	if loaded_config then
+		-- Apply the new config
+		config = loaded_config
+		print("New configuration applied for filetype: " .. filetype)
+	else
+		print("Error: Failed to load custom configuration.")
+	end
+
+	-- Autocompile using the new config
+	Rundi()
+end
+
+-- Register the :rundi command to trigger the compilation
+vim.api.nvim_create_user_command("rundi", Rundi, {})
+
+-- Register the :Rundi-set command to override config and create a JSON file
+vim.api.nvim_create_user_command("Rundi-set", Rundi_set, {})
 
 -- Setup function for plugin configuration
 local function setup(user_config)
