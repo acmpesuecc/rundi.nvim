@@ -103,6 +103,7 @@ local function rundi()
 	local options = config.autocompile[filetype]
 	if options then
 		setup_autocompile(filetype, options)
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(config.keymap, true, false, true), "n", false)
 	else
 		print("No autocompile configuration found for filetype: " .. filetype)
 	end
