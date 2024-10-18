@@ -147,6 +147,11 @@ local function Rundi_set()
 	Rundi()
 end
 
+-- Function to set key mappings
+local function set_keymap()
+	vim.api.nvim_set_keymap("n", config.keymap, ":Rundi<CR>", { noremap = true, silent = config.silent })
+end
+
 -- Register the :rundi command to trigger the compilation
 vim.api.nvim_create_user_command("Rundi", Rundi, {})
 
@@ -160,6 +165,7 @@ local function setup(user_config)
 			config[key] = value
 		end
 	end
+	set_keymap() -- Set the key mapping during setup
 end
 
 return {
