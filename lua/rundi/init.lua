@@ -156,7 +156,7 @@ end
 vim.api.nvim_create_user_command("Rundi", Rundi, {})
 
 -- Register the :Rundi-set command to override config and create a JSON file
-vim.api.nvim_create_user_command("Rundiset", Rundi_set, {})
+vim.api.nvim_create_user_command("RundiSet", Rundi_set, {})
 
 -- Setup function for plugin configuration
 local function setup(user_config)
