@@ -75,7 +75,7 @@ local function setup_autocompile(filetype, options)
 end
 
 -- Function that runs the autocompile and generates the executable
-local function rundi()
+local function Rundi()
 	-- Get the current file type (based on file extension)
 	local filetype = vim.bo.filetype
 
@@ -91,7 +91,7 @@ local function rundi()
 end
 
 -- Register the :rundi command to trigger the compilation and execution
-vim.api.nvim_create_user_command("rundi", rundi, {})
+vim.api.nvim_create_user_command("rundi", Rundi, {})
 
 -- Setup function for plugin configuration
 local function setup(user_config)
