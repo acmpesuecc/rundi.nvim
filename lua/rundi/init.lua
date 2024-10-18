@@ -109,7 +109,7 @@ local function rundi()
 	end
 end
 
-vim.api.nvim_create_user_command("Rundi", rundi, {})
+vim.api.nvim_create_user_command("rundi", rundi, {})
 
 local function setup(user_config)
 	for key, value in pairs(user_config) do
