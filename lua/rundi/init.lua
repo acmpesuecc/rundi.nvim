@@ -36,24 +36,9 @@ local function setup_autocompile(filetype, options)
 		local output_flag = options.output_format and (" -o " .. options.output_format) or ""
 		local execute_flag = options.output_format and (" && ./" .. options.output_format) or ""
 		local input_file = ' "%"'
-		local keymap = " " .. config.keymap
 
 		if config.split_direction == "fullscreen" then
-			-- Run :term in fullscreen mode
-			vim.cmd(
-				[[ autocmd FileType ]]
-					.. filetype
-					.. [[ nnoremap <buffer> ]]
-					.. silent_option
-					.. keymap
-					.. [[ :term ]]
-					.. options.compiler
-					.. compiler_args
-					.. input_file
-					.. output_flag
-					.. execute_flag
-					.. [[<CR>]]
-			)
+			vim.cmd([[ term ]] .. options.compiler .. compiler_args .. input_file .. output_flag .. execute_flag)
 			return
 		end
 
@@ -67,59 +52,53 @@ local function setup_autocompile(filetype, options)
 				split_cmd = "vsplitright"
 			end
 
-			-- Save the current buffer number before opening the terminal
 			local current_buffer = vim.fn.bufnr("%")
 
 			vim.cmd(
-				[[ autocmd FileType ]]
-					.. filetype
-					.. [[ nnoremap <buffer> ]]
-					.. silent_option
-					.. keymap
-					.. [[ :]]
+				[[ ]]
 					.. split_cmd
-					.. [[<CR>:te ]]
+					.. [[ | term ]]
 					.. options.compiler
 					.. compiler_args
 					.. input_file
 					.. output_flag
 					.. execute_flag
-					.. [[<CR>i]]
 			)
 
 			if config.persist_viewport and previous_buffer ~= 0 then
-				-- Switch back to the previous buffer
 				vim.cmd("execute 'buffer ' .. " .. previous_buffer)
 			end
 
-			-- Update the previous buffer to the current buffer
 			previous_buffer = current_buffer
 		end
 	end
 end
 
+-- Function that runs the autocompile and generates the executable
 local function rundi()
+	-- Get the current file type (based on file extension)
 	local filetype = vim.bo.filetype
+
+	-- Check if the file type has autocompile configuration
 	local options = config.autocompile[filetype]
 	if options then
+		-- Run the autocompile for the current filetype
 		setup_autocompile(filetype, options)
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(config.keymap, true, false, true), "n", false)
+		print("Autocompile executed for filetype: " .. filetype)
 	else
 		print("No autocompile configuration found for filetype: " .. filetype)
 	end
 end
 
+-- Register the :rundi command to trigger the compilation and execution
 vim.api.nvim_create_user_command("rundi", rundi, {})
 
+-- Setup function for plugin configuration
 local function setup(user_config)
 	for key, value in pairs(user_config) do
 		if config[key] ~= nil then
 			config[key] = value
 		end
-	end
-
-	for filetype, options in pairs(config.autocompile) do
-		setup_autocompile(filetype, options)
 	end
 end
 
