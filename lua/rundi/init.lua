@@ -22,7 +22,7 @@ local config = {
 	silent = true,
 	keymap = "<C-c>",
 	terminal_split = true,
-	split_direction = "top", 
+	split_direction = "top",
 	persist_viewport = true,
 }
 
@@ -40,7 +40,20 @@ local function setup_autocompile(filetype, options)
 
 		if config.split_direction == "fullscreen" then
 			-- Run :term in fullscreen mode
-			vim.cmd([[ autocmd FileType ]] .. filetype .. [[ nnoremap <buffer> ]] .. silent_option .. keymap .. [[ :term ]] .. options.compiler .. compiler_args .. input_file .. output_flag .. execute_flag .. [[<CR>]])
+			vim.cmd(
+				[[ autocmd FileType ]]
+					.. filetype
+					.. [[ nnoremap <buffer> ]]
+					.. silent_option
+					.. keymap
+					.. [[ :term ]]
+					.. options.compiler
+					.. compiler_args
+					.. input_file
+					.. output_flag
+					.. execute_flag
+					.. [[<CR>]]
+			)
 			return
 		end
 
@@ -57,7 +70,22 @@ local function setup_autocompile(filetype, options)
 			-- Save the current buffer number before opening the terminal
 			local current_buffer = vim.fn.bufnr("%")
 
-			vim.cmd([[ autocmd FileType ]] .. filetype .. [[ nnoremap <buffer> ]] .. silent_option .. keymap .. [[ :]] .. split_cmd .. [[<CR>:te ]] .. options.compiler .. compiler_args .. input_file .. output_flag .. execute_flag .. [[<CR>i]])
+			vim.cmd(
+				[[ autocmd FileType ]]
+					.. filetype
+					.. [[ nnoremap <buffer> ]]
+					.. silent_option
+					.. keymap
+					.. [[ :]]
+					.. split_cmd
+					.. [[<CR>:te ]]
+					.. options.compiler
+					.. compiler_args
+					.. input_file
+					.. output_flag
+					.. execute_flag
+					.. [[<CR>i]]
+			)
 
 			if config.persist_viewport and previous_buffer ~= 0 then
 				-- Switch back to the previous buffer
@@ -69,6 +97,19 @@ local function setup_autocompile(filetype, options)
 		end
 	end
 end
+
+local function rundi()
+	local filetype = vim.bo.filetype -- CHANGE: Get the file type
+
+	local options = config.autocompile[filetype]
+	if options then
+		setup_autocompile(filetype, options)
+	else
+		print("No autocompile configuration found for filetype: " .. filetype)
+	end
+end
+
+vim.api.nvim_create_user_command("rundi", rundi, {})
 
 local function setup(user_config)
 	for key, value in pairs(user_config) do
@@ -85,4 +126,3 @@ end
 return {
 	setup = setup,
 }
-
