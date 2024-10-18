@@ -99,7 +99,7 @@ local function setup_autocompile(filetype, options)
 end
 
 local function rundi()
-	local filetype = vim.bo.filetype -- CHANGE: Get the file type
+	local filetype = vim.bo.filetype
 
 	local options = config.autocompile[filetype]
 	if options then
@@ -108,8 +108,6 @@ local function rundi()
 		print("No autocompile configuration found for filetype: " .. filetype)
 	end
 end
-
-vim.api.nvim_create_user_command("rundi", rundi, {})
 
 local function setup(user_config)
 	for key, value in pairs(user_config) do
@@ -125,4 +123,5 @@ end
 
 return {
 	setup = setup,
+	vim.api.nvim_create_user_command("rundi", rundi, {}),
 }
