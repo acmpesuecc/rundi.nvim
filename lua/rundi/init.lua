@@ -91,7 +91,7 @@ local function Rundi()
 end
 
 -- Register the :rundi command to trigger the compilation and execution
-vim.api.nvim_create_user_command("rundi", Rundi, {})
+vim.api.nvim_create_user_command("Rundi", Rundi, {})
 
 -- Setup function for plugin configuration
 local function setup(user_config)
